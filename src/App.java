@@ -1,6 +1,8 @@
 import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -101,15 +103,13 @@ public class App {
     	} catch (IOException excecaoArquivo) {
     		produtosCadastrados = null;
     	} finally {
-    		arquivo.close();
-    	}
-    	
-    	return produtosCadastrados;
+		if (arquivo != null) {
+			arquivo.close();
+		}
+	}
+	
+	return produtosCadastrados;
     }
-    
-    /** Localiza um produto no vetor de produtos cadastrados, a partir do código de produto informado pelo usuário, e o retorna. 
-     *  Em caso de não encontrar o produto, retorna null 
-     */
     static Produto localizarProduto() {
         
     	Produto produto = null;
@@ -207,13 +207,51 @@ public class App {
      * @param pedido O pedido que deve ser finalizado.
      */
     public static void finalizarPedido(Pedido pedido) {
-    	
-    	// TODO
+        if (pedido == null) {
+            System.out.println("Nenhum pedido foi iniciado. Use a opção 4 para iniciar um pedido.");
+            return;
+        }
+        pilhaPedidos.empilhar(pedido);
+        System.out.println("Pedido finalizado e adicionado à pilha de pedidos.");
     }
     
     public static void listarProdutosPedidosRecentes() {
-    	
-    	// TODO
+        if (pilhaPedidos.vazia()) {
+            System.out.println("Nenhum pedido finalizado.");
+            return;
+        }
+        cabecalho();
+        System.out.println("Pedidos mais recentes:");
+        System.out.println(pilhaPedidos);
+    }
+    
+    static void testarPilhaMatricula() {
+        Pilha<Integer> pilhaMatricula = new Pilha<>();
+        Set<Character> digitosUsados = new HashSet<>();
+        System.out.println("Teste de pilha: insira sua matrícula (apenas dígitos).");
+        String matricula = teclado.nextLine().trim();
+        for (char ch : matricula.toCharArray()) {
+            if (Character.isDigit(ch) && !digitosUsados.contains(ch)) {
+                digitosUsados.add(ch);
+                pilhaMatricula.empilhar(Character.getNumericValue(ch));
+            }
+        }
+        System.out.println("Conteúdo da pilha após empilhar os dígitos únicos:");
+        if (pilhaMatricula.vazia()) {
+            System.out.println("Pilha vazia.");
+        } else {
+            System.out.println(pilhaMatricula);
+        }
+        if (!pilhaMatricula.vazia()) {
+            Integer desempilhado = pilhaMatricula.desempilhar();
+            System.out.println("Desempilhado: " + desempilhado);
+            System.out.println("Conteúdo da pilha após desempilhar:");
+            if (pilhaMatricula.vazia()) {
+                System.out.println("Pilha vazia.");
+            } else {
+                System.out.println(pilhaMatricula);
+            }
+        }
     }
     
 	public static void main(String[] args) {
@@ -222,6 +260,8 @@ public class App {
         
 		nomeArquivoDados = "produtos.txt";
         produtosCadastrados = lerProdutos(nomeArquivoDados);
+        
+        testarPilhaMatricula();
         
         Pedido pedido = null;
         

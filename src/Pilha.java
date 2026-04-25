@@ -10,7 +10,6 @@ public class Pilha<E> {
 		Celula<E> sentinela = new Celula<E>();
 		fundo = sentinela;
 		topo = sentinela;
-
 	}
 
 	public boolean vazia() {
@@ -40,6 +39,30 @@ public class Pilha<E> {
 
 	}
 
+	public int tamanho() {
+		int quantidade = 0;
+		Celula<E> atual = topo;
+		while (atual != fundo) {
+			quantidade++;
+			atual = atual.getProximo();
+		}
+		return quantidade;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		Celula<E> atual = topo;
+		while (atual != fundo) {
+			sb.append(atual.getItem());
+			atual = atual.getProximo();
+			if (atual != fundo) {
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Cria e devolve uma nova pilha contendo os primeiros numItens elementos
 	 * do topo da pilha atual.
@@ -53,8 +76,28 @@ public class Pilha<E> {
 	 * @throws IllegalArgumentException se a pilha não contém numItens elementos.
 	 */
 	public Pilha<E> subPilha(int numItens) {
+
+		if (numItens < 0) {
+			throw new IllegalArgumentException("O número de itens não pode ser negativo.");
+		}
+
+		Pilha<E> copiaInvertida = new Pilha<>();
+		Celula<E> atual = topo;
+		int contador = 0;
+		while (atual != fundo && contador < numItens) {
+			copiaInvertida.empilhar(atual.getItem());
+			atual = atual.getProximo();
+			contador++;
+		}
+		if (contador < numItens) {
+			throw new IllegalArgumentException("A pilha não contém " + numItens + " elementos.");
+		}
 		
-		// TODO
-		return null;
+		Pilha<E> resultado = new Pilha<>();
+		while (!copiaInvertida.vazia()) {
+			resultado.empilhar(copiaInvertida.desempilhar());
+		}
+		return resultado;
+		
 	}
 }
